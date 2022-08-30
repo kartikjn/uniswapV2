@@ -64,12 +64,13 @@ async function deployContracts() {
   router = await periphery.deploy(factory.address, weth.address);
   await router.deployTransaction.wait();
   console.log("Periphery[RouterV2] contract deployed to:", router.address);
+  console.log(await factory.INIT_CODE_HASH());
 }
 
 async function verifyContracts() {
-  await verify(tok1.address, ["Token1", "A", 10000]);
-  await verify(tok2.address, ["Token2", "B", 10000]);
-  await verify(weth.address, ["WETH", "WETH", 10000]);
+  await verifyToken(tok1.address, ["Token1", "A", 10000]);
+  await verifyToken(tok2.address, ["Token2", "B", 10000]);
+  await verifyToken(weth.address, ["WETH", "WETH", 10000]);
 
   await verify(factory.address, [deployer.address]);
   await verify(router.address, [factory.address, weth.address]);
@@ -95,6 +96,18 @@ async function verify(contractAddress, parameters) {
     await run("verify:verify", {
       address: contractAddress,
       constructorArguments: parameters,
+    });
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+async function verifyToken(contractAddress, parameters) {
+  try {
+    await run("verify:verify", {
+      address: contractAddress,
+      constructorArguments: parameters,
+      contract: "contracts/test/token.sol:token",
     });
   } catch (error) {
     console.error(error);
