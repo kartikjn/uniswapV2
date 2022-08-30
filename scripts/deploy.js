@@ -64,6 +64,7 @@ async function deployContracts() {
   router = await periphery.deploy(factory.address, weth.address);
   await router.deployTransaction.wait();
   console.log("Periphery[RouterV2] contract deployed to:", router.address);
+  console.log(await factory.INIT_CODE_HASH());
 }
 
 async function verifyContracts() {
